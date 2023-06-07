@@ -7,7 +7,7 @@ library(qtl)
 library(patchwork)
 library("MASS")   
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-source("toolbox.r")
+source("function.r")
 load('genotype_yeast.rdata')
 
 

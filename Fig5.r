@@ -12,7 +12,7 @@ library(broom)
 library(jtools)
 library(car)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-source("toolbox.r")
+source("function.r")
 # load data -------------------------------------------------------------------
 
 
@@ -26,10 +26,7 @@ class(cross)[1]<-'dh'
 # get_additive_effect -----------------------------------------------------
 
 additive_effect <- get_additive_effect(cross)
-
 locus_name <- colnames(X)
-
-
 
 Correlations <- Correlations %>% as_tibble() %>% 
   mutate(Within = as.numeric(Within), Between = as.numeric(Between)) %>%

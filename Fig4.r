@@ -117,7 +117,8 @@ LD_df <- Correlations %>%
 # Outlier ----------------------------------------------------------------
 
 load("Correlations.Rfile")
-
+load('genotype_yeast.rdata')
+locus_name <- colnames(X)
 
 
 Correlations <- Correlations %>% as_tibble() %>% 

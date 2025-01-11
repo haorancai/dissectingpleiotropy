@@ -166,8 +166,6 @@ outlier_corrected_df <- Correlations %>%
 
 
 
-
-
 # wilcox test -------------------------------------------------------------
 
 wilcox.test(abs(Default_df$cor_a),abs(Default_df$Between), alternative = 'greater')
@@ -204,109 +202,6 @@ p1 <- bind_cols(Default = Default, 'LD corrected'= LD, 'Outlier corrected'= outl
 
 
 
-
-load("Correlations.Rfile")
-
-
-
-Correlations <- Correlations %>% as_tibble() %>% 
-  mutate(Within = as.numeric(Within), Between = as.numeric(Between)) %>%
-  select(Phen1, Phen2, Within,Between) %>%
-  mutate(a = map2(Phen1, Phen2, ~ tibble(a1 = additive_effect %>% select(.x) %>% pull(),
-                                         a2 = additive_effect %>% select(.y) %>% pull(),
-                                         num = locus_name) %>%
-                    mutate(cor_element = (a1 - mean(a1))*(a2 - mean(a2))/ sqrt(var(a1)*var(a2))) %>% 
-                    mutate(H = 1.5 * IQR(cor_element)) %>% 
-                    mutate(qnt1 = quantile(cor_element, probs=c(.25, .75))[1],qnt2 = quantile(cor_element, probs=c(.25, .75))[2]) %>% 
-                    mutate(outlier = ifelse(cor_element >qnt2 + H | cor_element < qnt1 - H, TRUE,FALSE)) %>% 
-                    filter(outlier == FALSE)
-  )) %>% 
-  mutate(cor_a = map(a, ~ cor(tibble(.x) %>% pull(a1), tibble(.x) %>% pull(a2))[1] )) %>%
-  unnest(cor_a)
-
-Correlations <- 
-  Correlations %>% 
-  mutate(horizontal = map2(Phen1, Phen2, ~ tibble(a1 = additive_effect %>% select(.x) %>% pull(),
-                                                  a2 = additive_effect %>% select(.y) %>% pull(),
-                                                  num = locus_name) %>%
-                             mutate(cor_element = (a1 - mean(a1))*(a2 - mean(a2))/ sqrt(var(a1)*var(a2))) %>% 
-                             mutate(H = 1.5 * IQR(cor_element)) %>% 
-                             mutate(qnt1 = quantile(cor_element, probs=c(.25, .75))[1],qnt2 = quantile(cor_element, probs=c(.25, .75))[2]) %>% 
-                             mutate(outlier = ifelse(cor_element >qnt2 + H | cor_element < qnt1 - H, TRUE,FALSE)) %>% 
-                             filter(outlier == TRUE)
-  )) 
-
-Correlations <- 
-  Correlations %>% 
-  mutate(b = map2(Phen1, Phen2, ~ tibble(a1 = additive_effect %>% select(.x) %>% pull(),
-                                         a2 = additive_effect %>% select(.y) %>% pull(),
-                                         num = locus_name) 
-  ))  %>% 
-  mutate(cor_a_all = map(b, ~ cor(tibble(.x) %>% pull(a1), tibble(.x) %>% pull(a2))[1] )) %>%
-  select(-b) %>% 
-  unnest(cor_a_all)
-
-
-df <- Correlations %>% 
-  select(Phen1, Phen2,Between, cor_a,cor_a_all, horizontal)
-mean <- df %>% 
-  mutate(diff = cor_a - cor_a_all) %>% 
-  summarize(mean = mean(diff), sd = sd(diff)) %>% 
-  pull(mean)
-
-
-sd <- df %>% 
-  mutate(diff = cor_a - cor_a_all) %>% 
-  summarize(mean = mean(diff), sd = sd(diff)) %>% 
-  pull(sd)
-df <- df %>% 
-  mutate(diff = cor_a - cor_a_all) %>% 
-  mutate(dev = ifelse(diff > mean + 3*sd | diff < mean - 3*sd, TRUE, FALSE)) 
-
-p2 <- df %>% 
-  ggplot(aes(cor_a_all,cor_a, color = dev))+geom_point()+
-  xlab('Effect Size Correlation \n (Default)')+
-  ylab('Effect Size Correlation \n (Outlier corrected)')+
-  theme_Publication()+
-  theme(axis.title.x = element_text(colour = "#809F8C", face = 'bold'),
-        axis.title.y = element_text(colour = "#AB6B6B", face = 'bold'))+
-  geom_hline(yintercept = 0, size = 1, colour="#333333") +
-  geom_vline(xintercept = 0, size = 1, colour="#333333") +
-  theme(legend.position = 'none')+
-  annotate("label", label = "Horizontal trait pair", x = 0.57, y = -0.45, size = 2.5, color = "#333333") +
-  annotate(
-    geom = "curve", x = 0.8, y = -0.4, xend = 0.69, yend = 0.14, colour = "#333333", size = 1.2,
-    curvature = 0.6, arrow = arrow(length = unit(2, "mm"))
-  )+
-  annotate(
-    geom = "curve", x = 0.8, y = -0.4, xend = -0.5, yend = -0.05, colour = "#333333", size = 1.2,
-    curvature = 0.1, arrow = arrow(length = unit(2, "mm"))
-  )+
-  theme(aspect.ratio = 1/1)+
-  scale_color_manual(values = c("grey40","#e7cd79"),
-                     aesthetics = c("colour", "fill"))
-
-
-
-
-
-# table showing horizontal trait pair and prominent horizontal loci --------
-
-table<- df %>% filter(dev == 'TRUE') %>% 
-  mutate(prominent_loci = map(horizontal, ~ .x %>% arrange(-abs(cor_element)) %>% select(num) %>% slice(1) %>% pull())) %>% 
-  unnest(prominent_loci) %>% 
-  select(Phen1,Phen2, Between, cor_a,cor_a_all, prominent_loci) %>% 
-  rename(Phenotype1 = Phen1, Phenotype2 = Phen2, rG = Between, rD_default = cor_a_all, rD_outlier_corrected = cor_a, Biggest_outlier_loci = prominent_loci)
-
-
-write_csv(table, file = 'Horizontal_trait.csv')
-
-
-
-
-ggsave(p1, filename = 'Fig4_1.pdf', height = 5, width = 5)
-ggsave(p2, filename = 'Fig4_2.pdf', height = 3.5, width = 3.5)
-#ggsave(patch2, filename = 'Fig4_SI.pdf', height = 8, width = 10)
 
 
 

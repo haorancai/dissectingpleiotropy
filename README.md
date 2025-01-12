@@ -10,6 +10,5 @@ Cai, Haoran, Kerry Geiler-Samerotte, and David L. Des Marais. "Dissecting geneti
  Description 
 ##############
 
-This code will reproduce figures 1-3 in the paper "Dissecting genetic correlation and pleiotropy through a genetic cross." All code is written in R and run in RStudio. Each script can be run alone, provided the correct packages are installed (indicated in each script).  
+This code will reproduce part of figures in the paper "Dissecting genetic correlation and pleiotropy through a genetic cross." All code is written in R and run in RStudio. Each script can be run alone, provided the correct packages are installed (indicated in each script).  
 
-R scripts produce the figures indicated in the title. The figures were finished using Microsoft PowerPoint. 

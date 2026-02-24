@@ -1,4 +1,4 @@
-## Dissecting genetic correlation and pleiotropy through a genetic cross ##
+## Consistent and idiosyncratic pleiotropy: dissecting the genetic architecture of trait correlations through a genetic cross ##
 
 Repository code and data for 
 

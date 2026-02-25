@@ -20,12 +20,7 @@ public_code/
     ├── Correlations.Rfile          # Pre-computed genetic correlations
     ├── genotype_yeast.rdata        # Yeast genotype matrix
     ├── LD_pruning.rdata            # LD-pruned locus list
-    ├── merged_correlation.Rfile    # Correlations across GdA concentrations
-    └── Metadata/
-        ├── Brock2010_G_E1.csv
-        ├── Brock2010_G_E2.csv
-        ├── Brock2010_qtl_input_E1_scaled.csv
-        └── Brock2010_qtl_input_E2_scaled.csv
+    └── merged_correlation.Rfile    # Correlations across GdA concentrations
 ```
 
 ## Requirements

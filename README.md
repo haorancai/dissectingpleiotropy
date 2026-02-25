@@ -57,4 +57,3 @@ source("Fig6.r")    # generates Fig6_1.pdf, Fig6_2.png, Fig6_SI.pdf
 ## Data Sources
 
 - **Yeast morphology data**: From [Geiler-Samerotte et al. (2020)](https://doi.org/10.7554/eLife.58564)
-- **Brassica floral trait data**: From [Brock et al. (2010)](https://doi.org/10.1111/j.1558-5646.2010.01089.x)

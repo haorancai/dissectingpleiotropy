@@ -56,4 +56,4 @@ source("Fig6.r")    # generates Fig6_1.pdf, Fig6_2.png, Fig6_SI.pdf
 
 ## Data Sources
 
-- **Yeast morphology data**: From [Geiler-Samerotte et al. (2020)](https://doi.org/10.7554/eLife.58564)
+- **Yeast morphology data**: From [Geiler-Samerotte et al. (2020)](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3000836)

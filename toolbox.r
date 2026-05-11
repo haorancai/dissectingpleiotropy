@@ -229,8 +229,6 @@ simulation_for_a_given_population <- function(NrSNP = 1000, rau = coef,
 }
 
 
-
-
 library(LaplacesDemon)
 library(MultiRNG)
 library(VGAM)
@@ -371,30 +369,6 @@ get_additive_effect <- function(cross) {
 }
 
 
-get_stable_qtl_correlation <- function(cross, k) {
-  phen.number <- summary(cross)[[3]]
-  cor_additive_effect <- matrix(0, nrow = phen.number, ncol = phen.number)
-  cross <- calc.genoprob(cross, step = 1, error.prob = 0.001)
-  out.hk <- scanone(cross, pheno.col = 1:phen.number, method = "hk")
-  for (i in c(1:k)) {
-    cross <- sim.geno(cross, step = 0, n.draws = 16, error.prob = 0.0001)
-
-
-    additive_effect <- c()
-    for (i in c(1:phen.number)) {
-      a <- effectscan(cross, pheno.col = i, draw = FALSE)
-      additive_effect <- bind_cols(additive_effect, a[, 3])
-    }
-    cor_additive_effect <- cor_additive_effect + cor(additive_effect)
-  }
-
-  colnames(cor_additive_effect) <- colnames(out.hk %>% select(-chr, -pos))
-  cor_additive_effect <- cor_additive_effect / k
-
-  return(cor_additive_effect)
-}
-
-
 # Identifing unique loci
 findunique <- function(chrlist, collapse = 30) {
   # chrlist is a dataframe with loci position ($pos) and placeholder for unique identifier ($unique, all should be 0), for one chromosome
@@ -489,59 +463,6 @@ get_abs_min_from_replicate_additive_effect <- function(cor_additive_effect) {
 }
 
 
-getQTL <- function(lodcolumn, out, operm, out2, operm2, alpha, collapse = 30) {
-  # out,operm,out2 and operm2 are result of scanone and scantwo, lodcolumn is number, alpha is a vector of 2 (for additive and interactions) #example:lodcolumn=1;out=out.hk.L;operm=operm.hk.L;out2=out2.hk.L;operm2=operm2.hk.L;alpha=c(0.1,0.1);cross=cross.L;collapse=30
-  # single QTL
-  temp1 <- summary(out, perms = operm, alpha = alpha[1], lodcolumn = lodcolumn)
-  # addtional QTL on same chromosome from 2d scan
-  temp2 <- summary(out2, perms = operm2, alpha = c(0, 0, 0, alpha[1], alpha[1]), lodcolumn = lodcolumn, what = "add", allpairs = F)
-  # organize - get chr and pos
-  data <- data.frame(chr = c(temp1$chr, temp2$chr1, temp2$chr2), pos = c(temp1$pos, temp2$pos1, temp2$pos2))
-
-  # organize - collapse loci (loci found from 2d with loci found from 1d, take mean pos)
-  if (nrow(data) > 0) {
-    data <- ldply(split(cbind(data, unique = 0), data$chr), findunique, collapse = collapse)
-    data <- aggregate(pos ~ chr + unique, data, mean)
-    data <- cbind(data[, c("chr", "pos")], name = paste("Q", 1:nrow(data), sep = ""))
-    data$name <- as.character(data$name)
-  }
-
-  intbound <- nrow(data)
-  # interacting QTL
-  temp3 <- summary(out2, perms = operm2, alpha = c(1, 0, alpha[2], 0, 0), lodcolumn = lodcolumn, what = "int")
-  int <- matrix(, nrow(temp3), 3)
-  if (nrow(temp3) > 0) {
-    for (i in 1:nrow(temp3)) {
-      # is 1st interacting loci already a QTL
-      q1 <- which(data$chr == temp3$chr1[i] & data$pos < (temp3$pos1[i] + collapse) & data$pos > (temp3$pos1[i] - collapse))
-      if (length(q1) == 0) {
-        # 1st interacting loci is new
-        data <- rbind(data, data.frame(chr = temp3$chr1[i], pos = temp3$pos1[i], name = paste("QI", nrow(data) + 1, sep = "")))
-        q1 <- nrow(data)
-      }
-      # is 2st interacting loci already a QTL
-      q2 <- which(data$chr == temp3$chr2[i] & data$pos < (temp3$pos2[i] + collapse) & data$pos > (temp3$pos2[i] - collapse))
-      if (length(q2) == 0) {
-        # 2st interacting loci is new
-        data <- rbind(data, data.frame(chr = temp3$chr2[i], pos = temp3$pos2[i], name = paste("QI", nrow(data) + 1, sep = "")))
-        q2 <- nrow(data)
-      }
-      # if two interactions share loci, take mean pos
-      if (q1 > intbound) {
-        data$pos[q1] <- mean(c(data$pos[q1], temp3$pos1[i]))
-      }
-      if (q2 > intbound) {
-        data$pos[q2] <- mean(c(data$pos[q2], temp3$pos2[i]))
-      }
-      # info on which loci interact
-      int[i, ] <- c(q1, q2, temp3$lod.int[i])
-    }
-  }
-
-  attr(data, "trait") <- colnames(out)[lodcolumn + 2]
-  return(list(data, int))
-}
-
 linear <- function(x) {
   x
 }
@@ -567,27 +488,4 @@ get_element_squared <- function(m) {
   m <- as.matrix(reshape2::acast(m, m[, 1] ~ m[, 2]))
 
   return(m)
-}
-
-
-# matrix comparison -------------------------------------------------------
-
-propGmaxAngle <- function(bentE1, bentE2) {
-  # Proportion of variation along gmax
-  # (Kirkpatrick 2009)
-  gmax1 <- bentE1$values[1]
-  gmax2 <- bentE2$values[1]
-  propGmaxE1 <- gmax1 / sum(bentE1$values)
-  propGmaxE2 <- gmax2 / sum(bentE2$values)
-  propGmax <- abs(propGmaxE1 - propGmaxE2)
-  # propGmaxDiff <- propGmax/((propGmaxE1+propGmaxE2)/2)
-
-
-  # Angle between the first eigenvector of the two matrices (Ingleby et al. 2014)
-  e1gmax <- bentE1$vectors[, 1]
-  e2gmax <- bentE2$vectors[, 1]
-  angle <- (180 / pi) * acos((e1gmax %*% e2gmax) / (sqrt(e1gmax %*% e1gmax) * sqrt(e2gmax %*% e2gmax)))
-  angle <- ifelse(test = angle > 90, yes = 180 - angle, no = angle)
-
-  return(c(propGmax, angle))
 }

@@ -36,6 +36,7 @@ library(car)
 # --- Set up paths ------------------------------------------------------------
 library(here)
 here::i_am("scripts/figure_5b_perturbation_stability.R")
+dir.create(here("results"), showWarnings = FALSE, recursive = TRUE)
 source(here("R", "toolbox.R"))
 # load data -------------------------------------------------------------------
 

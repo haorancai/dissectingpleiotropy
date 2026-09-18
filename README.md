@@ -1,9 +1,8 @@
-# Published-version analysis code
+# Consistent and idiosyncratic pleiotropy in shaping genetic correlations
 
 This repository contains the selected analyses supporting the published version
-of _Consistent and idiosyncratic pleiotropy: dissecting the genetic architecture
-of trait correlations through a genetic cross_ by Haoran Cai, Kerry
-Geiler-Samerotte, and David L. Des Marais.
+of **Consistent and idiosyncratic pleiotropy in shaping genetic correlations**
+by Haoran Cai, Kerry Geiler-Samerotte, and David L. Des Marais.
 
 ## Scope
 
@@ -38,7 +37,8 @@ Use R 4.4 or newer. The Figure 4 and 5B analyses use the following packages:
 install.packages(c(
   "tidyverse", "qtl", "ggpubr", "viridis", "ggExtra", "corrr",
   "ggthemes", "confintr", "broom", "jtools", "bbplot", "patchwork",
-  "car", "cowplot", "here", "tidygraph", "igraph", "broom.mixed"
+  "car", "cowplot", "here", "tidygraph", "igraph", "broom.mixed",
+  "LaplacesDemon", "MultiRNG", "VGAM"
 ))
 
 install.packages("BiocManager")
@@ -63,8 +63,3 @@ The yeast morphology inputs derive from
 [Geiler-Samerotte et al. (2020)](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3000836).
 See [the data dictionary](docs/data_dictionary.md) for each supplied object and
 the scripts that use it.
-
-## License
-
-No license has been selected yet. Reuse permission is therefore not granted by
-this repository. Add a license before creating the public release.

@@ -36,6 +36,7 @@ library(patchwork)
 # --- Set up paths ------------------------------------------------------------
 library(here)
 here::i_am("scripts/figure_4_trimmed_rd.R")
+dir.create(here("results"), showWarnings = FALSE, recursive = TRUE)
 source(here("R", "toolbox.R"))
 
 # load data -------------------------------------------------------------------

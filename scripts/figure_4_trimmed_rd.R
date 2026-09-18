@@ -1,8 +1,8 @@
 # =============================================================================
-# Figure 5: Empirical rG vs rD with IQR outlier removal
+# Figure 4: IQR-trimmed polygenic background correlations in yeast
 # =============================================================================
 #
-# This script generates Figure 5 from the manuscript.
+# This script generates the analytical panels for published Figure 4.
 #   - Scatter plots of rG vs effect size correlation (default, LD-pruned,
 #     outlier-corrected), plus density and deviation plots.
 #
@@ -12,9 +12,9 @@
 #   - data/genotype_yeast.rdata
 #   - data/LD_pruning.rdata
 #
-# Output:
-#   - Fig5_1.pdf, Fig5_2.pdf (Figure 5 panels)
-#   - Horizontal_trait.csv (Table 1: candidate HP trait pairs)
+# Output (written to results/):
+#   - figure_4_main_panels.pdf, figure_4_supporting_panels.pdf
+#   - table_1_candidate_trait_pairs.csv
 # =============================================================================
 
 # --- Load packages -----------------------------------------------------------
@@ -35,8 +35,8 @@ library(patchwork)
 
 # --- Set up paths ------------------------------------------------------------
 library(here)
-here::i_am("Fig5.r")
-source(here("toolbox.r"))
+here::i_am("scripts/figure_4_trimmed_rd.R")
+source(here("R", "toolbox.R"))
 
 # load data -------------------------------------------------------------------
 
@@ -400,7 +400,6 @@ c(1:1000) %>%
 #
 # library(patchwork)
 # a + b
-# ggsave(filename = 'Fig_S9.pdf')
 
 # # theme_Publication()
 # plot(outlier_corrected_1.25,outlier_corrected_1.5)
@@ -688,12 +687,12 @@ table <- table %>%
   )
 
 
-write_csv(table, file = "Horizontal_trait.csv")
+write_csv(table, file = here("results", "table_1_candidate_trait_pairs.csv"))
 
 
 patch1 <- p1 + p2
 patch2 <- p3 + p4 + p5
 
 patch1 / patch2
-ggsave(patch1, filename = "Fig5_1.pdf", height = 8, width = 10)
-ggsave(patch2, filename = "Fig5_2.pdf", height = 8, width = 10)
+ggsave(patch1, filename = here("results", "figure_4_main_panels.pdf"), height = 8, width = 10)
+ggsave(patch2, filename = here("results", "figure_4_supporting_panels.pdf"), height = 8, width = 10)

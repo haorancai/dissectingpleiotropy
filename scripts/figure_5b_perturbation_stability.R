@@ -1,11 +1,10 @@
 # =============================================================================
-# Figure 6: rD predicts stability of genetic correlations under perturbation
+# Figure 5B: rD predicts stability of genetic correlations under perturbation
 # =============================================================================
 #
-# This script generates Figure 6 from the manuscript.
-#   - Panel a: Coefficient plots from multiple regression (change in rG ~ rD + rG)
-#   - Panel b-d: Permutation test comparing rD vs null predictor at each GdA dose
-#   - SI panels: Alternative null model (additive noise)
+# This script generates the quantitative panel and supporting analyses for
+# published Figure 5. The Figure 5A workflow diagram is intentionally not
+# generated in code.
 #
 # Data requirements:
 #   - data/geno_with_pheno.csv
@@ -13,10 +12,10 @@
 #   - data/Correlations.Rfile
 #   - data/merged_correlation.Rfile
 #
-# Output:
-#   - Fig6_1.pdf (main figure panels)
-#   - Fig6_2.png (faceted scatter plot)
-#   - Fig6_SI.pdf (supplementary null model)
+# Output (written to results/):
+#   - figure_5b_stability_scatter.png
+#   - figure_5_supporting_coefficients.pdf
+#   - figure_5_supplementary_null.pdf
 # =============================================================================
 
 # --- Load packages -----------------------------------------------------------
@@ -36,8 +35,8 @@ library(car)
 
 # --- Set up paths ------------------------------------------------------------
 library(here)
-here::i_am("Fig6.r")
-source(here("toolbox.r"))
+here::i_am("scripts/figure_5b_perturbation_stability.R")
+source(here("R", "toolbox.R"))
 # load data -------------------------------------------------------------------
 
 
@@ -124,7 +123,7 @@ Merged_Correlations %>%
   theme(legend.text = element_text(size = 10), legend.key.width = unit(2, "cm")) +
   theme(aspect.ratio = 1 / 1)
 
-ggsave(filename = "Fig5_2.png")
+ggsave(filename = here("results", "figure_5b_stability_scatter.png"))
 
 
 data <- Merged_Correlations %>%
@@ -186,7 +185,6 @@ library(broom.mixed)
 p0 <- plot_summs(fit, fit1, fit2, fit3,
   model.names = c("Aggregated", "8.5µM GdA", "25µM GdA", "100µM GdA")
 )
-# ggsave(filename = 'mlm_summ.pdf')
 
 
 # bivariate normal sampling
@@ -405,7 +403,7 @@ cowplot::plot_grid(
   rG_rGn_bvn,
   align = "h", axis = "b", rel_widths = c(1, 2), ncol = 2, nrow = 1
 ) # ,labels=c("b", "c")
-cowplot::ggsave2(filename = "Fig5_1.pdf", height = 5, width = 16)
+cowplot::ggsave2(filename = here("results", "figure_5_supporting_coefficients.pdf"), height = 5, width = 16)
 
 
 # SI ----------------------------------------------------------------------
@@ -603,4 +601,4 @@ p3 <- ggExtra::ggMarginal(p3, margin = "x", groupColour = TRUE, groupFill = TRUE
 
 
 rG_rGn_n <- gridExtra::grid.arrange(p1, p2, p3, ncol = 3, nrow = 1)
-ggsave(filename = "Fig5_SI.pdf", rG_rGn_n)
+ggsave(filename = here("results", "figure_5_supplementary_null.pdf"), rG_rGn_n)

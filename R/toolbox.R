@@ -1,3 +1,4 @@
+# Shared functions used by the retained Figure 4 and Figure 5B analyses.
 library(tidygraph)
 library(igraph)
 # library(MDBED)

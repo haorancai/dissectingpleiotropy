@@ -1,59 +1,70 @@
-# Code for Main Figures
+# Published-version analysis code
 
-Code and data to reproduce the main figures in:
+This repository contains the selected analyses supporting the published version
+of _Consistent and idiosyncratic pleiotropy: dissecting the genetic architecture
+of trait correlations through a genetic cross_ by Haoran Cai, Kerry
+Geiler-Samerotte, and David L. Des Marais.
 
-**"Consistent and idiosyncratic pleiotropy: dissecting the genetic architecture of trait correlations through a genetic cross"**
+## Scope
 
-Haoran Cai, Kerry Geiler-Samerotte, David L. Des Marais
+The repository deliberately reproduces only the analyses retained for the
+published article:
 
-## Repository Structure
+| Script | Publication content | Products |
+| --- | --- | --- |
+| `scripts/figure_4_trimmed_rd.R` | IQR-trimmed polygenic background-correlation analysis. | Figure 4 analytical panels and candidate-pair table |
+| `scripts/figure_5b_perturbation_stability.R` | Figure 5B perturbation-stability analysis and supporting null analyses. | Figure 5B and supporting files |
 
+The following are intentionally excluded: the retired legacy simulation,
+published Figure 3, Figure 1's conceptual illustration, and the workflow
+diagram in Figure 5A. Figure 5A is a manuscript graphic; this repository
+reproduces its quantitative panel (5B), not the diagram.
+
+## Layout
+
+```text
+R/                         shared analysis functions
+scripts/                   figure-specific entry points
+data/                      supplied empirical analysis inputs
+results/                   regenerated files (ignored by Git)
+docs/data_dictionary.md    input descriptions
 ```
-public_code/
-├── README.md
-├── toolbox.r            # Shared utility functions (theme, simulation, bootstrap)
-├── Fig3.r               # Figure 3: rG vs rD under simulated genetic architectures
-├── Fig5.r               # Figure 5: Empirical rG vs rD, IQR outlier removal, Table 1
-├── Fig6.r               # Figure 6: rD predicts rG stability under perturbation
-└── data/
-    ├── geno_with_pheno.csv         # Yeast cross genotype + phenotype data
-    ├── Correlations.Rfile          # Pre-computed genetic correlations
-    ├── genotype_yeast.rdata        # Yeast genotype matrix
-    ├── LD_pruning.rdata            # LD-pruned locus list
-    └── merged_correlation.Rfile    # Correlations across GdA concentrations
-```
 
-## Requirements
+## Setup
 
-Install the following R packages before running the scripts:
+Use R 4.4 or newer. The Figure 4 and 5B analyses use the following packages:
 
 ```r
 install.packages(c(
   "tidyverse", "qtl", "ggpubr", "viridis", "ggExtra", "corrr",
   "ggthemes", "confintr", "broom", "jtools", "bbplot", "patchwork",
-  "PhenotypeSimulator", "MASS", "car", "readxl", "cowplot",
-  "ggrepel", "diffcor", "reshape2", "gridExtra", "here",
-  "preprocessCore", "Biobase", "broom.mixed"
+  "car", "cowplot", "here", "tidygraph", "igraph", "broom.mixed"
 ))
 
-# Bioconductor packages (if not already installed):
-# BiocManager::install(c("preprocessCore", "Biobase"))
+install.packages("BiocManager")
+BiocManager::install(c("preprocessCore", "Biobase"))
 ```
 
-## Usage
+## Reproduce retained analyses
 
-All scripts use the [`here`](https://here.r-lib.org/) package for portable path management. To run any script:
-
-1. Open R/RStudio
-2. Set the working directory to this folder, or simply open the `.r` file — `here` will auto-detect the project root
-3. Source the script:
+From the repository root, run the scripts in this order:
 
 ```r
-source("Fig3.r")    # generates Fig3_1.pdf, Fig3_2.pdf
-source("Fig5.r")    # generates Fig5_1.pdf, Fig5_2.pdf, Horizontal_trait.csv
-source("Fig6.r")    # generates Fig6_1.pdf, Fig6_2.png, Fig6_SI.pdf
+source("scripts/figure_4_trimmed_rd.R")
+source("scripts/figure_5b_perturbation_stability.R")
 ```
 
-## Data Sources
+Each script creates `results/` if necessary and writes its outputs there. The
+empirical scripts use fixed random seeds where stochastic estimates are made.
 
-- **Yeast morphology data**: From [Geiler-Samerotte et al. (2020)](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3000836)
+## Data provenance
+
+The yeast morphology inputs derive from
+[Geiler-Samerotte et al. (2020)](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3000836).
+See [the data dictionary](docs/data_dictionary.md) for each supplied object and
+the scripts that use it.
+
+## License
+
+No license has been selected yet. Reuse permission is therefore not granted by
+this repository. Add a license before creating the public release.

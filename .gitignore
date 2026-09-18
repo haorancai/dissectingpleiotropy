@@ -1,0 +1,10 @@
+# macOS and interactive R state
+.DS_Store
+.RData
+.Rhistory
+.Rproj.user/
+Rplots.pdf
+
+# Recreated analysis products
+results/*
+!results/.gitkeep

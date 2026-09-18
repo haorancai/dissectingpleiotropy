@@ -14,11 +14,6 @@ published article:
 | `scripts/figure_4_trimmed_rd.R` | IQR-trimmed polygenic background-correlation analysis. | Figure 4 analytical panels and candidate-pair table |
 | `scripts/figure_5b_perturbation_stability.R` | Figure 5B perturbation-stability analysis and supporting null analyses. | Figure 5B and supporting files |
 
-The following are intentionally excluded: the retired legacy simulation,
-published Figure 3, Figure 1's conceptual illustration, and the workflow
-diagram in Figure 5A. Figure 5A is a manuscript graphic; this repository
-reproduces its quantitative panel (5B), not the diagram.
-
 ## Layout
 
 ```text
@@ -53,13 +48,3 @@ From the repository root, run the scripts in this order:
 source("scripts/figure_4_trimmed_rd.R")
 source("scripts/figure_5b_perturbation_stability.R")
 ```
-
-Each script creates `results/` if necessary and writes its outputs there. The
-empirical scripts use fixed random seeds where stochastic estimates are made.
-
-## Data provenance
-
-The yeast morphology inputs derive from
-[Geiler-Samerotte et al. (2020)](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3000836).
-See [the data dictionary](docs/data_dictionary.md) for each supplied object and
-the scripts that use it.
